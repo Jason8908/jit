@@ -37,11 +37,15 @@ void strbuf_release(strbuf_t *sb) {
  * If there is not enough remaining free space, the buffer will
  * be resized to accommodate the new data.
  *
+ * A len of 0 is a no-op.
+ *
  * *sb must be a valid pointer to an already initialized strbuf_t.
  * data must be a valid pointer to a block of data to append.
  * len must be a valid size_t value.
  */
 void strbuf_cat(strbuf_t *sb, const void *data, size_t len) {
+  if (len == 0) return;
+
   strbuf_grow(sb, len);
   memcpy(sb->buf + sb->len, data, len);
   sb->len += len;
