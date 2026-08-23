@@ -5,6 +5,11 @@ CFLAGS    := -std=c11 -Wall -Wextra -g -O0
 LDFLAGS   :=
 LDLIBS    :=
 
+UNAME_S := $(shell uname -s)
+ifneq ($(UNAME_S),Darwin)
+  LDLIBS += -lcrypto
+endif
+
 ifeq ($(SAN),1)
   SANFLAGS := -fsanitize=address,undefined -fno-sanitize-recover=all \
               -fno-omit-frame-pointer
