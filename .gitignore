@@ -60,3 +60,6 @@ dkms.conf
 
 # compile commands
 compile_commands.json
+
+# cache files
+*.cache
