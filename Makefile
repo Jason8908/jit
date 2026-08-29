@@ -20,6 +20,7 @@ endif
 
 SRC_DIR   := src
 TEST_DIR  := tests
+CLI_TEST_DIR := $(TEST_DIR)/cli
 BUILD_DIR := build$(SUFFIX)
 BIN_DIR   := bin$(SUFFIX)
 
@@ -41,7 +42,7 @@ VALGRIND_FLAGS := --leak-check=full --show-leak-kinds=all \
                   --errors-for-leak-kinds=all --track-origins=yes \
                   --error-exitcode=1
 
-.PHONY: all clean test test-valgrind compile_commands.json
+.PHONY: all clean test test-unit test-cli test-valgrind compile_commands.json
 all: $(TARGET)
 
 $(TARGET): $(OBJS) | $(BIN_DIR)
@@ -56,14 +57,19 @@ $(BUILD_DIR)/$(TEST_DIR)/%.o: $(TEST_DIR)/%.c | $(BUILD_DIR)/$(TEST_DIR)
 $(BIN_DIR)/$(TEST_DIR)/%: $(BUILD_DIR)/$(TEST_DIR)/%.o $(LIB_OBJS) | $(BIN_DIR)/$(TEST_DIR)
 	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
-test: $(TEST_BINS)
+test: test-unit test-cli
+
+test-unit: $(TEST_BINS)
 	@fail=0; for t in $(TEST_BINS); do \
 		echo "== $$t"; \
 		$(RUNNER) ./$$t || fail=1; \
 	done; exit $$fail
 
+test-cli: $(TARGET)
+	@JIT=$(CURDIR)/$(TARGET) sh $(CLI_TEST_DIR)/run.sh
+
 test-valgrind:
-	@$(MAKE) test RUNNER="valgrind $(VALGRIND_FLAGS)"
+	@$(MAKE) test-unit RUNNER="valgrind $(VALGRIND_FLAGS)"
 
 -include $(DEPS)
 
