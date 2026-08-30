@@ -50,6 +50,15 @@ run() {
   return 0
 }
 
+# run_stdin <file> <args...> -- like run(), with `file` on standard input.
+run_stdin() {
+  stdin_file="$1"
+  shift
+  "$JIT" "$@" <"$stdin_file" >"$OUT" 2>"$ERR"
+  STATUS=$?
+  return 0
+}
+
 fail() {
   if [ "$case_failed" -eq 0 ]; then
     printf '  FAIL %s\n' "$case_name"

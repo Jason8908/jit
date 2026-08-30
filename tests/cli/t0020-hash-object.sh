@@ -168,4 +168,67 @@ test_begin 'an unreadable first file emits nothing'
   assert_stdout_empty
 test_end
 
+# ---------------------------------------------------------------------- stdin
+
+test_begin '--stdin hashes content read from standard input'
+  printf '%s' 'hello world' > in.txt
+  run_stdin in.txt hash-object --stdin
+  assert_status 0
+  assert_stdout_equals "$OID_HELLO_WORLD"
+  assert_stderr_empty
+test_end
+
+test_begin '--stdin hashes empty input'
+  : > in_empty.txt
+  run_stdin in_empty.txt hash-object --stdin
+  assert_status 0
+  assert_stdout_equals "$OID_EMPTY"
+test_end
+
+test_begin '--stdin hashes input spanning multiple read chunks'
+  head -c 10000 /dev/zero | tr '\0' 'b' > in_big.txt
+  run_stdin in_big.txt hash-object --stdin
+  assert_status 0
+  assert_stdout_equals "$OID_10000_B"
+test_end
+
+test_begin '--stdin hashes binary input containing NUL bytes'
+  { printf 'a'; head -c 1 /dev/zero; printf 'b'; head -c 1 /dev/zero; printf 'c'; } > in_bin.txt
+  run_stdin in_bin.txt hash-object --stdin
+  assert_status 0
+  assert_stdout_equals "$OID_NUL_BYTES"
+test_end
+
+test_begin '--stdin and a file operand agree on the same content'
+  run hash-object hw.txt
+  from_file="$(nth_line 1)"
+  run_stdin hw.txt hash-object --stdin
+  assert_status 0
+  assert_equals "$from_file" "$(nth_line 1)" 'oids'
+test_end
+
+test_begin '--stdin rejects file operands'
+  run_stdin in.txt hash-object --stdin hw.txt
+  assert_status 129
+  assert_stderr_contains 'takes no file arguments'
+  assert_stdout_empty
+test_end
+
+test_begin '-h prints usage and exits 129'
+  run hash-object -h
+  assert_status 129
+  assert_stderr_contains 'usage: jit hash-object'
+  assert_stderr_contains '--stdin'
+  assert_stdout_empty
+test_end
+
+# parse_options stops at the first operand, so a flag after one is a filename.
+test_begin '--stdin after an operand is treated as a filename'
+  run hash-object hw.txt --stdin
+  assert_status 128
+  assert_stdout_lines 1
+  assert_stdout_equals "$OID_HELLO_WORLD"
+  assert_stderr_contains 'stdin'
+test_end
+
 test_summary

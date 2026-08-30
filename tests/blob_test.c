@@ -52,7 +52,7 @@ static void test_hash_path_missing_file(void) {
   strbuf_t err;
 
   strbuf_init(&err, 0);
-  ASSERT(blob_hash_path(&oid, "no-such-file", &err) == -1);
+  ASSERT(blob_hash_path(&oid, "no-such-file", &err) == ERR_FAIL_TO_READ_FILE);
   ASSERT(err.len > 0);
   strbuf_release(&err);
 }
