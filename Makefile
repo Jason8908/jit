@@ -42,8 +42,12 @@ VALGRIND_FLAGS := --leak-check=full --show-leak-kinds=all \
                   --errors-for-leak-kinds=all --track-origins=yes \
                   --error-exitcode=1
 
-.PHONY: all clean test test-unit test-cli test-valgrind compile_commands.json
+.PHONY: all clean test test-unit test-cli test-valgrind compile_commands.json install-usr
 all: $(TARGET)
+
+install-usr: $(TARGET)
+	mkdir -p $(HOME)/.local/bin
+	install -m 755 $(TARGET) $(HOME)/.local/bin/$(NAME)
 
 $(TARGET): $(OBJS) | $(BIN_DIR)
 	$(CC) $(LDFLAGS) $(OBJS) -o $@ $(LDLIBS)
