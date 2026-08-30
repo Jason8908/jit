@@ -6,4 +6,9 @@
  */
 int cmd_hash_object(int argc, const char **argv);
 
+/**
+ * Implementation of the 'init' command.
+ */
+int cmd_init(int argc, const char **argv);
+
 #endif

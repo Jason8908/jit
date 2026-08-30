@@ -123,3 +123,13 @@ assert_stderr_empty() {
 assert_equals() {
   [ "$1" = "$2" ] || fail "$3: want '$1', got '$2'"
 }
+
+assert_dir_exists() {
+  [ -d "$1" ] || fail "want directory '$1', found none"
+}
+
+# assert_perms <want> <path> -- want is the 9-character mode, e.g. 'rwxr-xr-x'.
+assert_perms() {
+  got="$(ls -ld "$2" | cut -c2-10)"
+  [ "$got" = "$1" ] || fail "$2 mode: want '$1', got '$got'"
+}

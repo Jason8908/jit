@@ -35,6 +35,7 @@ test_begin 'help output lists every registered command'
   run help
   assert_stdout_contains 'help'
   assert_stdout_contains 'hash-object'
+  assert_stdout_contains 'init'
 test_end
 
 test_begin 'unknown command exits 1 with a message on stderr'

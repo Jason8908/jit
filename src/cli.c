@@ -2,12 +2,11 @@
 #include <string.h>
 
 #include "jit/cli.h"
+#include "jit/shared.h"
 #include "jit/usage.h"
 #include "jit/builtin.h"
 
 #define JIT_VERSION "0.1.0"
-
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
 typedef int (*cmd_fn_t)(int argc, const char **argv);
 
@@ -27,6 +26,7 @@ static int cmd_help(int argc, const char **argv);
 static const cmd_struct_t commands[] = {
   { "help", cmd_help, "list available commands" },
   { "hash-object", cmd_hash_object, "compute and print the hash of an object" },
+  { "init", cmd_init, "create an empty jit repository" },
 };
 
 static void print_version(void) {
