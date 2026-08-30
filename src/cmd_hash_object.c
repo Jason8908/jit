@@ -5,7 +5,6 @@
 #include "jit/usage.h"
 #include "jit/strbuf.h"
 #include "jit/blob.h"
-#include "jit/object.h"
 #include "jit/hash.h"
 
 static const char *const hash_object_usage[] = {
@@ -24,17 +23,17 @@ int cmd_hash_object(int argc, const char **argv) {
   for (int i = 0; i < argc; i++) {
     const char *path = argv[i];
 
-    strbuf_t payload, err;
-    strbuf_init(&payload, 0);
-    strbuf_init(&err, 0);
-    if (blob_read_path(&payload, path, &err) < 0) {
-      die("failed to read file '%s': %s", path, err.buf);
-    }
-    strbuf_release(&err);
-
     oid_sha1_t hash;
-    object_hash(&hash, OBJ_BLOB, payload.buf, payload.len);
-    strbuf_release(&payload);
+    strbuf_t err;
+    strbuf_init(&err, 0);
+
+    int hash_result = blob_hash_path(&hash, path, &err);
+    if (hash_result == ERR_FAIL_TO_READ_FILE)
+      die("failed to read file '%s': %s", path, err.buf);
+    if (hash_result < 0)
+      die("failed to create file hash for '%s': %s", path, err.buf);
+    
+    strbuf_release(&err);
 
     char hex[OID_SHA1_HEXSZ + 1];
     oid_sha1_fmt(hex, &hash);
