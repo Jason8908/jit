@@ -19,3 +19,13 @@ jobs:
 
       - name: Test under valgrind
         run: make test-valgrind
+
+  test-gcc14:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and test under GCC 14
+        run: >
+          docker run --rm -v "$PWD":/w -w /w gcc:14
+          sh -c 'apt-get update && apt-get install -y -qq libssl-dev && make test'
