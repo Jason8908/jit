@@ -6,7 +6,7 @@
 #include "jit/usage.h"
 #include "jit/builtin.h"
 
-#define JIT_VERSION "0.1.0"
+#define JIT_VERSION "0.1.1"
 
 typedef int (*cmd_fn_t)(int argc, const char **argv);
 
