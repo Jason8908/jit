@@ -12,6 +12,8 @@
 #define JIT_PRINTF_FMT(fmt_idx, args_idx)
 #endif
 
+#include <stdio.h>
+
 /**
  * Print each line of `lines` to stderr as a usage message, then exit(129).
  *
@@ -19,6 +21,14 @@
  * The lines will be prefixed with "usage: " and "   or: " respectively.
  */
 _Noreturn void usage(const char *const *lines);
+
+/**
+ * Print each line of `lines` to `stream` as a usage message.
+ *
+ * `lines` is a NULL-terminated array of usage strings.
+ * The lines will be prefixed with "usage: " and "   or: " respectively.
+ */
+void fprint_usage(FILE *stream, const char *const *lines);
 
 /**
  * Report a fatal error to stderr as "fatal: <message>" and exit(128).

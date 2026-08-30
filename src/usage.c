@@ -5,15 +5,19 @@
 #include <stdarg.h>
 
 _Noreturn void usage(const char *const *lines) {
-  if (lines == NULL || lines[0] == NULL) exit(JIT_EXIT_USAGE);
-
-  fprintf(stderr, "usage: %s\n", lines[0]);
-
-  for (size_t i = 1; lines[i] != NULL; i++) {
-    fprintf(stderr, "   or: %s\n", lines[i]);
-  }
+  fprint_usage(stderr, lines);
 
   exit(JIT_EXIT_USAGE);
+}
+
+void fprint_usage(FILE *stream, const char *const *lines) {
+  if (lines == NULL || lines[0] == NULL) return;
+
+  fprintf(stream, "usage: %s\n", lines[0]);
+
+  for (size_t i = 1; lines[i] != NULL; i++) {
+    fprintf(stream, "   or: %s\n", lines[i]);
+  }
 }
 
 _Noreturn void die(const char *fmt, ...) {
