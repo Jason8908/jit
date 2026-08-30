@@ -3,7 +3,7 @@ CC        ?= cc
 CPPFLAGS  := -Iinclude -D_POSIX_C_SOURCE=200809L
 CFLAGS    := -std=c11 -Wall -Wextra -g -O0
 LDFLAGS   :=
-LDLIBS    :=
+LDLIBS    := -lz
 
 UNAME_S := $(shell uname -s)
 ifneq ($(UNAME_S),Darwin)
