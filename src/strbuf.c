@@ -111,3 +111,33 @@ void strbuf_grow(strbuf_t *sb, size_t len) {
   sb->buf = p;
   sb->alloc = new_alloc;
 }
+
+/**
+ * Shrink the buffer to len bytes and NUL-terminate it.
+ *
+ * The terminator is written past len but not counted, so the buffer is
+ * always a valid C string afterwards. Growing is not supported.
+ *
+ * *sb must be a valid pointer to an already initialized strbuf_t.
+ * len must not exceed the current length.
+ */
+void strbuf_truncate(strbuf_t *sb, size_t len) {
+  if (len > sb->len) abort();
+
+  sb->len = len;
+  strbuf_cstr(sb);
+}
+
+/**
+ * NUL-terminate the buffer without counting the terminator, and return it.
+ *
+ * The returned pointer is invalidated by any later append, since the
+ * buffer may be reallocated.
+ *
+ * *sb must be a valid pointer to an already initialized strbuf_t.
+ */
+const char *strbuf_cstr(strbuf_t *sb) {
+  strbuf_grow(sb, 1);
+  sb->buf[sb->len] = '\0';
+  return sb->buf;
+}

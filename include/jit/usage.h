@@ -34,8 +34,8 @@ void fprint_usage(FILE *stream, const char *const *lines);
  * Report a fatal error to stderr as "fatal: <message>" and exit(128).
  *
  * For unrecoverable failures only. Must not be called from the object
- * layer (object.c, blob.c, hash.c, hex.c, strbuf.c), which reports
- * failure by return value.
+ * layer (object.c, blob.c, hash.c, hex.c, strbuf.c, compress.c, odb.c),
+ * which reports failure by return value.
  */
  _Noreturn void die(const char *fmt, ...) JIT_PRINTF_FMT(1, 2);
 

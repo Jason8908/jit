@@ -11,4 +11,9 @@ int cmd_hash_object(int argc, const char **argv);
  */
 int cmd_init(int argc, const char **argv);
 
+/**
+ * Implementation of the 'add' command.
+ */
+int cmd_add(int argc, const char **argv);
+
 #endif

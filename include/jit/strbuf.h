@@ -20,5 +20,7 @@ void strbuf_release(strbuf_t *sb);
 void strbuf_cat(strbuf_t *sb, const void *data, size_t len);
 void strbuf_catf(strbuf_t *sb, const char *fstr, ...);
 void strbuf_grow(strbuf_t *sb, size_t len);
+void strbuf_truncate(strbuf_t *sb, size_t len);
+const char *strbuf_cstr(strbuf_t *sb);
 
 #endif

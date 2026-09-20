@@ -27,6 +27,7 @@ static const cmd_struct_t commands[] = {
   { "help", cmd_help, "list available commands" },
   { "hash-object", cmd_hash_object, "compute and print the hash of an object" },
   { "init", cmd_init, "create an empty jit repository" },
+  { "add", cmd_add, "add files to the staging area" },
 };
 
 static void print_version(void) {

@@ -2,6 +2,7 @@
 #include "jit/object.h"
 #include "jit/strbuf.h"
 #include "jit/hash.h"
+#include "jit/hex.h"
 
 static const char *obj_type_str(obj_type_t type) {
   switch (type) {
@@ -28,4 +29,18 @@ void object_hash(oid_sha1_t *out, obj_type_t type, const void *data, size_t len)
   oid_sha1_hash(out, sb.buf, sb.len);
 
   strbuf_release(&sb);
+}
+
+void object_hash_and_encode(oid_sha1_t *hash_out, strbuf_t *payload_out, obj_type_t type, const void *data, size_t len) {
+  object_encode(payload_out, type, data, len);
+  oid_sha1_hash(hash_out, payload_out->buf, payload_out->len);
+}
+
+oid_path_t oid_to_components(oid_sha1_t oid) {
+  oid_path_t result;
+
+  hex_encode(result.prefix, oid.hash, 1);
+  hex_encode(result.rest, oid.hash + 1, OID_SHA1_RAWSZ - 1);
+
+  return result;
 }

@@ -233,6 +233,86 @@ static void test_catf_grows_for_large_output(void) {
   strbuf_release(&sb);
 }
 
+// truncate / cstr
+
+static void test_cstr_on_unallocated_buffer(void) {
+  strbuf_t sb;
+  strbuf_init(&sb, 0);
+
+  const char *str = strbuf_cstr(&sb);
+
+  ASSERT(str != NULL);
+  ASSERT(strcmp(str, "") == 0);
+  ASSERT(sb.len == 0);
+
+  strbuf_release(&sb);
+}
+
+static void test_cstr_terminates_after_cat(void) {
+  strbuf_t sb;
+  strbuf_init(&sb, 0);
+  strbuf_cat(&sb, "abc", 3);
+
+  ASSERT(strcmp(strbuf_cstr(&sb), "abc") == 0);
+  ASSERT(sb.len == 3);
+
+  strbuf_release(&sb);
+}
+
+static void test_truncate_shortens_the_string(void) {
+  strbuf_t sb;
+  strbuf_init(&sb, 0);
+  strbuf_catf(&sb, "%s", "dir/child");
+
+  strbuf_truncate(&sb, 3);
+
+  ASSERT(sb.len == 3);
+  ASSERT(strcmp(strbuf_cstr(&sb), "dir") == 0);
+
+  strbuf_release(&sb);
+}
+
+static void test_truncate_to_same_length_is_noop(void) {
+  strbuf_t sb;
+  strbuf_init(&sb, 0);
+  strbuf_catf(&sb, "%s", "dir");
+
+  strbuf_truncate(&sb, sb.len);
+
+  ASSERT(sb.len == 3);
+  ASSERT(strcmp(strbuf_cstr(&sb), "dir") == 0);
+
+  strbuf_release(&sb);
+}
+
+static void test_truncate_to_zero_empties_the_string(void) {
+  strbuf_t sb;
+  strbuf_init(&sb, 0);
+  strbuf_catf(&sb, "%s", "dir");
+
+  strbuf_truncate(&sb, 0);
+
+  ASSERT(sb.len == 0);
+  ASSERT(strcmp(strbuf_cstr(&sb), "") == 0);
+
+  strbuf_release(&sb);
+}
+
+static void test_truncate_then_append_rebuilds_the_string(void) {
+  strbuf_t sb;
+  strbuf_init(&sb, 0);
+  strbuf_catf(&sb, "%s", "dir");
+
+  size_t saved = sb.len;
+  strbuf_catf(&sb, "/%s", "first");
+  strbuf_truncate(&sb, saved);
+  strbuf_catf(&sb, "/%s", "second");
+
+  ASSERT(strcmp(strbuf_cstr(&sb), "dir/second") == 0);
+
+  strbuf_release(&sb);
+}
+
 int main(void) {
   RUN_TEST(test_init_zero_allocates_nothing);
   RUN_TEST(test_init_reserves_requested_size);
@@ -253,6 +333,13 @@ int main(void) {
   RUN_TEST(test_catf_overwrites_previous_terminator);
   RUN_TEST(test_catf_with_empty_result);
   RUN_TEST(test_catf_grows_for_large_output);
+
+  RUN_TEST(test_cstr_on_unallocated_buffer);
+  RUN_TEST(test_cstr_terminates_after_cat);
+  RUN_TEST(test_truncate_shortens_the_string);
+  RUN_TEST(test_truncate_to_same_length_is_noop);
+  RUN_TEST(test_truncate_to_zero_empties_the_string);
+  RUN_TEST(test_truncate_then_append_rebuilds_the_string);
 
   return TEST_SUMMARY();
 }

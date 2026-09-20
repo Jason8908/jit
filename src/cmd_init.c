@@ -3,15 +3,12 @@
 #include <errno.h>
 #include <limits.h>
 #include <string.h>
-#include <sys/stat.h>
 #include <unistd.h>
 
 #include "jit/builtin.h"
 #include "jit/parse_options.h"
 #include "jit/usage.h"
 #include "jit/shared.h"
-
-#define JIT_DIR ".jit"
 
 static const char *const init_usage[] = {
   "jit init",
@@ -21,16 +18,13 @@ static const char *const init_usage[] = {
 
 static const char *const repo_dirs[] = {
   JIT_DIR,
-  JIT_DIR "/objects",
+  JIT_OBJECTS_DIR,
 };
-
-static bool ensure_dir(const char *path);
 
 int cmd_init(int argc, const char **argv) {
   const option_t options[] = { OPT_END() };
 
-  struct stat st;
-  bool already_initialized = (stat(JIT_DIR, &st) == 0) && S_ISDIR(st.st_mode);
+  bool already_initialized = is_jit_repository(JIT_DIR);
 
   argc = parse_options(argc, argv, options, init_usage);
 
@@ -52,23 +46,4 @@ int cmd_init(int argc, const char **argv) {
     printf("Initialized empty Jit repository in %s\n", strcat(cwd, "/" JIT_DIR));
   
   return 0;
-}
-
-static bool ensure_dir(const char *path) {
-  if (mkdir(path, 0777) == 0)
-    return true;
-
-  if (errno != EEXIST)
-    return false;
-
-  struct stat st;
-  if (stat(path, &st) < 0)
-    return false;
-
-  if (!S_ISDIR(st.st_mode)) {
-    errno = ENOTDIR;
-    return false;
-  }
-
-  return true;
 }
