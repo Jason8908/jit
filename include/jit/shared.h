@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
+#define GIT_DIR ".git"
 #define JIT_DIR ".jit"
 #define JIT_OBJECTS_DIR JIT_DIR "/objects"
 

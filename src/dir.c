@@ -9,7 +9,7 @@
 #include "jit/strbuf.h"
 #include "jit/usage.h"
 
-static const char *const skip_names[] = { JIT_DIR };
+static const char *const skip_names[] = { JIT_DIR, GIT_DIR };
 
 typedef struct walk_ctx {
   dir_walk_fn fn;
