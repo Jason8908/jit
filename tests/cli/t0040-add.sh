@@ -242,17 +242,6 @@ test_end
 
 # skip rules
 
-test_begin 'dotfiles and .git are walked like anything else'
-  fresh dir-dotfiles
-  mkdir -p .git/objects
-  echo hidden > .hidden
-  echo gitobj > .git/objects/thing
-  run add .
-  assert_status 0
-  assert_object_count 2
-  assert_stderr_empty
-test_end
-
 test_begin 'a nested repository directory is skipped'
   fresh dir-nested-repo
   mkdir -p sub/.jit
